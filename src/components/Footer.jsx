@@ -105,21 +105,34 @@ const Footer = () => {
       </div>
 
       <div className="flex flex-col items-center justify-between gap-2 py-5 md:flex-row">
-        <p>
-          © {new Date().getFullYear()}
-          <a href="https://prebuiltui.com">PrebuiltUI</a>. All rights reserved.
+        <p className="text-center text-sm text-gray-500">
+          © {new Date().getFullYear()}{' '}
+          <a
+            href="https://prebuiltui.com"
+            className="text-primary hover:underline"
+          >
+            CarRental
+          </a>
+          . Todos os direitos reservados.
         </p>
-        <ul className="flex items-center gap-4">
+
+        <ul className="flex items-center gap-4 text-sm text-gray-500">
           <li>
-            <a href="#">Privacidade</a>
-            <li> | </li>
+            <a href="#" className="hover:text-primary">
+              Privacidade
+            </a>
           </li>
+          <li>|</li>
           <li>
-            <a href="#">Termos</a>
-            <li> | </li>
+            <a href="#" className="hover:text-primary">
+              Termos
+            </a>
           </li>
+          <li>|</li>
           <li>
-            <a href="#">Cookies</a>
+            <a href="#" className="hover:text-primary">
+              Cookies
+            </a>
           </li>
         </ul>
       </div>

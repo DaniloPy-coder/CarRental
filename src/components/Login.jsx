@@ -1,6 +1,13 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { api } from '../services/api'
+import { AppContext } from '../context/AppContext'
 
-const Login = ({ setShowLogin }) => {
+const Login = () => {
+  const navigate = useNavigate()
+  const { setShowLogin, fetchUser, setToken } = useContext(AppContext)
+
   const [state, setState] = useState('login')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -8,84 +15,129 @@ const Login = ({ setShowLogin }) => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
+
+    try {
+      if (state === 'login') {
+        const { data } = await api.post('/session', {
+          email,
+          password,
+        })
+
+        localStorage.setItem('token', data.token)
+        setToken(data.token)
+        api.defaults.headers.common.Authorization = `Bearer ${data.token}`
+
+        await fetchUser()
+
+        toast.success('Login realizado com sucesso ✅')
+
+        setShowLogin(false)
+      }
+
+      if (state === 'register') {
+        await api.post('/users', {
+          name,
+          email,
+          password,
+        })
+
+        const { data } = await api.post('/session', {
+          email,
+          password,
+        })
+
+        localStorage.setItem('token', data.token)
+        setToken(data.token)
+        api.defaults.headers.common.Authorization = `Bearer ${data.token}`
+
+        await fetchUser()
+
+        toast.success('Cadastro realizado com sucesso ✅')
+
+        setShowLogin(false)
+        navigate('/')
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          'Email ou senha inválidos ❌',
+      )
+    }
   }
 
   return (
-    <div
+    <section
       onClick={() => setShowLogin(false)}
-      className="z-100 fixed bottom-0 left-0 right-0 top-0 flex items-center bg-black/50 text-sm text-gray-600"
+      className="fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center bg-black/50 text-sm text-gray-600"
     >
       <form
         onSubmit={onSubmitHandler}
         onClick={(e) => e.stopPropagation()}
-        className="m-auto flex w-80 flex-col items-start gap-4 rounded-lg border border-gray-200 bg-white p-8 py-12 text-gray-500 shadow-xl sm:w-[352px]"
+        className="flex w-80 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-8 py-12 shadow-xl sm:w-[352px]"
       >
-        <p className="m-auto text-2xl font-medium">
-          {state === 'login' ? 'Login' : 'Cadastre-se'}
+        <p className="m-auto text-2xl font-medium text-primary">
+          {state === 'login' ? 'Login' : 'Cadastro'}
         </p>
         {state === 'register' && (
           <div className="w-full">
             <p>Nome</p>
             <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              placeholder="Digite seu nome"
-              className="mt-1 w-full rounded border border-gray-200 p-2 outline-primary"
               type="text"
+              placeholder="Nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
+              className="mt-1 w-full rounded border border-gray-200 p-2 outline-primary"
             />
           </div>
         )}
         <div className="w-full">
           <p>Email</p>
           <input
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Email"
             value={email}
-            placeholder="Digite seu email"
-            className="mt-1 w-full rounded border border-gray-200 p-2 outline-primary"
-            type="email"
+            onChange={(e) => setEmail(e.target.value)}
             required
+            className="mt-1 w-full rounded border border-gray-200 p-2 outline-primary"
           />
         </div>
         <div className="w-full">
           <p>Senha</p>
           <input
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            placeholder="Digite sua senha"
-            className="mt-1 w-full rounded border border-gray-200 p-2 outline-primary"
             type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
+            className="mt-1 w-full rounded border border-gray-200 p-2 outline-primary"
           />
         </div>
-        {state === 'register' ? (
-          <p>
-            Já tem conta?
-            <span
-              onClick={() => setState('login')}
-              className="cursor-pointer text-primary outline-primary"
-            >
-              {' '}
-              Faça login
-            </span>
-          </p>
-        ) : (
-          <p>
-            Criar uma conta?
-            <span
-              onClick={() => setState('register')}
-              className="cursor-pointer text-primary outline-primary"
-            >
-              {' '}
-              Cadastre-se
-            </span>
-          </p>
-        )}
-        <button className="w-full cursor-pointer rounded-md bg-primary py-2 text-white outline-primary transition-all hover:bg-blue-800">
-          {state === 'register' ? 'Create Account' : 'Login'}
+
+        <button
+          type="submit"
+          className="mt-2 rounded-md bg-primary py-2 text-white"
+        >
+          {state === 'register' ? 'Cadastrar' : 'Login'}
         </button>
+
+        <p className="mt-2 text-center text-sm">
+          {state === 'login' ? 'Não tem conta?' : 'Já tem conta?'}{' '}
+          <span
+            onClick={() => {
+              setState(state === 'login' ? 'register' : 'login')
+              setName('')
+              setEmail('')
+              setPassword('')
+            }}
+            className="cursor-pointer text-primary"
+          >
+            {state === 'login' ? 'Cadastre-se' : 'Faça login'}
+          </span>
+        </p>
       </form>
-    </div>
+    </section>
   )
 }
 

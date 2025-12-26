@@ -1,18 +1,11 @@
-import { useEffect, useState } from 'react'
-import { assets, dummyDashboardData } from '../../assets/assets'
+import { useContext } from 'react'
+import { assets } from '../../assets/assets'
 import Title from '../../components/owner/Title'
+import { AppContext } from '../../context/AppContext'
 
 const Dashboard = () => {
-  const currency = import.meta.env.VITE_CURRENCY
-
-  const [data, setData] = useState({
-    totalCars: 0,
-    totalBookings: 0,
-    pendingBookings: 0,
-    completedBookings: 0,
-    recentBookings: [],
-    monthlyRevenue: 0,
-  })
+  const { dashboardData } = useContext(AppContext)
+  const data = dashboardData
 
   const dashboardCards = [
     {
@@ -36,10 +29,6 @@ const Dashboard = () => {
       icon: assets.listIconColored,
     },
   ]
-
-  useEffect(() => {
-    setData(dummyDashboardData)
-  }, [])
 
   return (
     <div className="flex-1 px-4 pt-10 md:px-10">
@@ -66,11 +55,11 @@ const Dashboard = () => {
       </div>
 
       <div className="mb-8 flex w-full flex-wrap items-start gap-6">
-        {/* Reserva recente */}
         <div className="w-full max-w-lg rounded-md border border-borderColor p-4 md:p-6">
           <h1 className="text-lg font-medium">Reserva recente</h1>
           <p className="text-gray-500">Últimas reservas de clientes</p>
-          {data.recentBookings.map((booking, index) => (
+
+          {(data.recentBookings ?? []).map((booking, index) => (
             <div key={index} className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="hidden h-12 w-12 items-center justify-center rounded-full bg-primary/10 md:flex">
@@ -85,16 +74,13 @@ const Dashboard = () => {
                     {booking.car.brand} {booking.car.model}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {booking.createdAt.split('T')[0]}
+                    {booking.createdAt?.split('T')[0] ?? 'Sem data'}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 font-medium">
-                <p className="text-sm text-gray-500">
-                  {currency}
-                  {booking.price}
-                </p>
+                <p className="text-sm text-gray-500">{booking.price}</p>
                 <p className="rounded-full border border-borderColor px-3 py-0.5 text-sm">
                   {booking.status}
                 </p>
@@ -103,12 +89,10 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Receita mensal */}
         <div className="mb-6 w-full rounded-md border border-borderColor p-4 md:max-w-xs md:p-6">
           <h1 className="text-lg font-medium">Receita mensal</h1>
           <p className="text-gray-500">Receita do mês atual</p>
           <p className="mt-6 text-3xl font-semibold text-primary">
-            {currency}
             {data.monthlyRevenue}
           </p>
         </div>

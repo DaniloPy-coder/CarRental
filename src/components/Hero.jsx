@@ -1,8 +1,24 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { assets, cityList } from '../assets/assets'
+import { AppContext } from '../context/AppContext'
 
 const Hero = () => {
   const [pickupLocation, setPickupLocation] = useState('')
+
+  const { pickupDate, setPickupDate, returnDate, setReturnDate, navigate } =
+    useContext(AppContext)
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    navigate(
+      '/cars?pickupLocation=' +
+        pickupLocation +
+        '&pickupDate=' +
+        pickupDate +
+        '&returnDate=' +
+        returnDate,
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-14 bg-light text-center md:pt-24">
@@ -10,7 +26,10 @@ const Hero = () => {
         Carros de luxo para alugar
       </h1>
 
-      <form className="flex w-full max-w-[320px] flex-col items-start justify-between rounded-lg bg-white p-6 shadow-[0px_8px_20px_rgba(0,0,0,0.1)] md:max-w-[800px] md:flex-row md:items-center md:gap-8 md:rounded-full">
+      <form
+        onSubmit={handleSearch}
+        className="flex w-full max-w-[320px] flex-col items-start justify-between rounded-lg bg-white p-6 shadow-[0px_8px_20px_rgba(0,0,0,0.1)] md:max-w-[800px] md:flex-row md:items-center md:gap-8 md:rounded-full"
+      >
         {/* Campos de seleção e datas */}
         <div className="flex flex-col items-start gap-8 md:ml-8 md:flex-row md:items-end md:gap-10">
           {/* Local de retirada */}
@@ -40,6 +59,8 @@ const Hero = () => {
               Data de retirada
             </label>
             <input
+              value={pickupDate}
+              onChange={(e) => setPickupDate(e.target.value)}
               type="date"
               id="pickup-date"
               min={new Date().toISOString().split('T')[0]}
@@ -54,6 +75,8 @@ const Hero = () => {
               Data de retorno
             </label>
             <input
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
               type="date"
               id="return-date"
               className="rounded-md border border-borderColor px-3 py-2 text-sm text-gray-600 outline-none focus:border-primary"

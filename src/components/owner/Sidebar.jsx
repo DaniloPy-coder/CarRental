@@ -1,15 +1,28 @@
-import React, { useState } from 'react'
-import { assets, dummyUserData, ownerMenuLinks } from '../../assets/assets'
+import { useContext, useState } from 'react'
+import { assets, ownerMenuLinks } from '../../assets/assets'
 import { NavLink, useLocation } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { AppContext } from '../../context/AppContext'
+import { api } from '../../services/api'
 
 const Sidebar = () => {
-  const user = dummyUserData
+  const { user, fetchUser } = useContext(AppContext)
   const location = useLocation()
   const [image, setImage] = useState('')
 
   const updateImage = async () => {
-    user.image = URL.createObjectURL(image)
-    setImage('')
+    try {
+      const formData = new FormData()
+      formData.append('image', image)
+
+      const { data } = await api.put('/users/update-image', formData)
+
+      fetchUser()
+      toast.success(data.message || 'Imagem atualizada')
+      setImage('')
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   return (
@@ -18,33 +31,37 @@ const Sidebar = () => {
         <label htmlFor="image">
           <img
             src={
-              image
-                ? URL.createObjectURL(image)
-                : user?.image ||
-                  'https://images.unsplash.com/photo-1633332755192-727a05c4013d?=80&w=300'
+              user?.avatar ||
+              'https://dummyimage.com/150x150/cccccc/ffffff&text=User'
             }
-            alt="user image"
-            className="mx-auto h-9 w-9 rounded-full md:h-14 md:w-14"
+            alt="user"
+            className="mx-auto h-9 w-9 rounded-full object-cover md:h-14 md:w-14"
           />
+
           <input
             type="file"
             id="image"
-            accept="image/"
+            accept="image/*"
             hidden
             onChange={(e) => setImage(e.target.files[0])}
           />
-
           <div className="absolute bottom-0 left-0 right-0 top-0 hidden cursor-pointer items-center justify-center rounded-full bg-black/10 group-hover:flex">
-            <img src={assets.edit_icon} alt="edit icon" />
+            <img src={assets.edit_icon} alt="edit" />
           </div>
         </label>
       </div>
+
       {image && (
-        <button className="absolute right-0 top-0 flex cursor-pointer gap-1 bg-primary/10 p-2 text-primary">
+        <button
+          type="button"
+          onClick={updateImage}
+          className="absolute right-0 top-0 flex cursor-pointer gap-1 bg-primary/10 p-2 text-primary"
+        >
           Salvar
-          <img src={assets.check_icon} alt="check icon" width={13} />
+          <img src={assets.check_icon} alt="check" width={13} />
         </button>
       )}
+
       <p className="mt-2 text-base max-md:hidden">{user?.name}</p>
 
       <div className="w-full">
@@ -52,18 +69,22 @@ const Sidebar = () => {
           <NavLink
             key={index}
             to={link.path}
-            className={`relative flex w-full items-center gap-2 py-3 pl-4 first:mt-6 ${link.path === location.pathname ? 'bg-primary/10 text-primary' : 'text-gray-600'}`}
+            className={`relative flex w-full items-center gap-2 py-3 pl-4 first:mt-6 ${
+              link.path === location.pathname
+                ? 'bg-primary/10 text-primary'
+                : 'text-gray-600'
+            }`}
           >
             <img
               src={
                 link.path === location.pathname ? link.coloredIcon : link.icon
               }
-              alt="car icon"
+              alt="icon"
             />
             <span className="max-md:hidden">{link.name}</span>
-            <div
-              className={`${link.path === location.pathname && 'bg-primary'} absolute right-0 h-8 w-1.5 rounded-l`}
-            ></div>
+            {link.path === location.pathname && (
+              <div className="absolute right-0 h-8 w-1.5 rounded-l bg-primary"></div>
+            )}
           </NavLink>
         ))}
       </div>

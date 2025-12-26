@@ -8,7 +8,7 @@ const CarCard = ({ car }) => {
   return (
     <div
       onClick={() => {
-        navigate(`/car-details/${car._id}`)
+        navigate(`/car-details/${car.id}`)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }}
       className="group cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:-translate-y-1"
@@ -50,11 +50,11 @@ const CarCard = ({ car }) => {
         <div className="mt-4 grid grid-cols-2 gap-y-2 text-gray-600">
           <div className="text-muted-foreground flex items-center text-sm">
             <img src={assets.users_icon} alt="user icon" className="mr-2 h-4" />
-            <span>{car.seating_capacity} Lugares</span>
+            <span>{car.seatingcapacity} Lugares</span>
           </div>
           <div className="text-muted-foreground flex items-center text-sm">
             <img src={assets.fuel_icon} alt="fuel icon" className="mr-2 h-4" />
-            <span>{car.fuel_type}</span>
+            <span>{car.fuelType}</span>
           </div>
           <div className="text-muted-foreground flex items-center text-sm">
             <img src={assets.car_icon} alt="car icon" className="mr-2 h-4" />

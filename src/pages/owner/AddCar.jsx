@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import Title from '../../components/owner/Title'
 import { assets } from '../../assets/assets'
+import toast from 'react-hot-toast'
+import { api } from '../../services/api'
+import { AppContext } from '../../context/AppContext'
 
 const AddCar = () => {
-  const currency = import.meta.env.VITE_CURRENCY
+  const { fetchDashboardData } = useContext(AppContext)
 
   const [image, setImage] = useState(null)
   const [car, setCar] = useState({
@@ -13,13 +16,57 @@ const AddCar = () => {
     pricePerDay: 0,
     category: '',
     transmission: '',
-    seating_capacity: 0,
-    fuel_type: '',
+    seatingCapacity: 0,
+    fuelType: '',
+    location: '',
     description: '',
   })
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const onSubmitHandler = async (e) => {
     e.preventDefault()
+    if (isLoading) return null
+
+    setIsLoading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', image)
+      formData.append('brand', car.brand)
+      formData.append('model', car.model)
+      formData.append('year', car.year)
+      formData.append('price_per_day', car.pricePerDay)
+      formData.append('category', car.category)
+      formData.append('transmission', car.transmission)
+      formData.append('fuel_type', car.fuelType)
+      formData.append('seating_capacity', car.seatingCapacity)
+      formData.append('location', car.location)
+      formData.append('description', car.description)
+
+      const { data } = await api.post('/cars', formData)
+      if (data.success) {
+        toast.success(data.message)
+        setImage(null)
+        setCar({
+          brand: '',
+          model: '',
+          year: 0,
+          pricePerDay: 0,
+          category: '',
+          transmission: '',
+          fuelType: '',
+          seatingCapacity: 0,
+          location: '',
+          description: '',
+        })
+
+        fetchDashboardData()
+      }
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -33,7 +80,6 @@ const AddCar = () => {
         onSubmit={onSubmitHandler}
         className="mt-6 flex max-w-xl flex-col gap-5 text-sm text-gray-500"
       >
-        {/* Imagem do carro */}
         <div className="flex w-full items-center gap-2">
           <label htmlFor="car-image">
             <img
@@ -54,7 +100,6 @@ const AddCar = () => {
           </p>
         </div>
 
-        {/* Marca e modelo do carro */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="flex w-full flex-col">
             <label>Marca</label>
@@ -80,7 +125,6 @@ const AddCar = () => {
           </div>
         </div>
 
-        {/* Ano, preço e categoria do carro */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           <div className="flex w-full flex-col">
             <label>Ano</label>
@@ -94,7 +138,7 @@ const AddCar = () => {
             />
           </div>
           <div className="flex w-full flex-col">
-            <label>Preço por dia ({currency})</label>
+            <label>Preço por dia </label>
             <input
               type="number"
               placeholder="100"
@@ -119,7 +163,6 @@ const AddCar = () => {
           </div>
         </div>
 
-        {/* Transmissão, capacidade de assentos e tipo de combustível */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           <div className="flex w-full flex-col">
             <label>Câmbio</label>
@@ -137,8 +180,8 @@ const AddCar = () => {
           <div className="flex w-full flex-col">
             <label>Tipo de combustível</label>
             <select
-              onChange={(e) => setCar({ ...car, fuel_type: e.target.value })}
-              value={car.fuel_type}
+              onChange={(e) => setCar({ ...car, fuelType: e.target.value })}
+              value={car.fuelType}
               className="mt-1 rounded-md border border-borderColor px-3 py-2 outline-none"
             >
               <option value="">Tipo de combustível</option>
@@ -156,21 +199,20 @@ const AddCar = () => {
               placeholder="4"
               required
               className="mt-1 rounded-md border border-borderColor px-3 py-2 outline-none"
-              value={car.seating_capacity}
+              value={car.seatingCapacity}
               onChange={(e) =>
-                setCar({ ...car, seating_capacity: e.target.value })
+                setCar({ ...car, seatingCapacity: e.target.value })
               }
             />
           </div>
         </div>
 
-        {/* Localização do carro */}
         <div className="flex w-full flex-col">
           <div className="flex w-full flex-col">
             <label>Localização</label>
             <select
               onChange={(e) => setCar({ ...car, location: e.target.value })}
-              value={car.fuel_type}
+              value={car.location}
               className="mt-1 rounded-md border border-borderColor px-3 py-2 outline-none"
             >
               <option value="">Selecione o estado</option>
@@ -205,7 +247,6 @@ const AddCar = () => {
           </div>
         </div>
 
-        {/* Descrição do carro */}
         <div className="flex w-full flex-col">
           <label>Descrição</label>
           <textarea
@@ -215,11 +256,12 @@ const AddCar = () => {
             required
             value={car.description}
             onChange={(e) => setCar({ ...car, description: e.target.value })}
-          ></textarea>
+          />
         </div>
 
         <button className="mt-4 flex w-max cursor-pointer items-center gap-2 rounded-md bg-primary px-4 py-2.5 font-medium text-white">
           <img src={assets.tick_icon} alt="tick icon" />
+          {isLoading ? 'Adicionando...' : 'Adicionar'}
         </button>
       </form>
     </div>

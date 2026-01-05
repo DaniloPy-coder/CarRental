@@ -64,8 +64,8 @@ const ManageBookings = () => {
           </thead>
 
           <tbody>
-            {bookings.map((booking, index) => (
-              <tr key={index} className="border-t border-borderColor">
+            {bookings.map((booking) => (
+              <tr key={booking._id} className="border-t border-borderColor">
                 <td className="flex items-center gap-3 p-3">
                   <img
                     src={booking.car.image}
@@ -94,29 +94,17 @@ const ManageBookings = () => {
                 </td>
 
                 <td className="p-3">
-                  {booking.status === 'pendente' ? (
-                    <select
-                      onChange={(e) =>
-                        changeBookingStatus(booking.id, e.target.value)
-                      }
-                      value={booking.status}
-                      className="mt-1 rounded-md border border-borderColor px-2 py-1.5 text-gray-500 outline-none"
-                    >
-                      <option value="pendente">Pendente</option>
-                      <option value="cancelado">Cancelado</option>
-                      <option value="confirmado">Confirmado</option>
-                    </select>
-                  ) : (
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        booking.status === 'confirmado'
-                          ? 'bg-green-100 text-green-500'
-                          : 'bg-red-100 text-red-500'
-                      }`}
-                    >
-                      {booking.status}
-                    </span>
-                  )}
+                  <select
+                    value={booking.status}
+                    onChange={(e) =>
+                      changeBookingStatus(booking._id, e.target.value)
+                    }
+                    className={`mt-1 rounded-md border px-2 py-1.5 text-sm font-medium outline-none transition ${booking.status === 'pendente' && 'border-yellow-400 bg-yellow-50 text-yellow-700'} ${booking.status === 'confirmado' && 'border-green-400 bg-green-50 text-green-700'} ${booking.status === 'cancelado' && 'border-red-400 bg-red-50 text-red-700'} `}
+                  >
+                    <option value="pendente"> Pendente</option>
+                    <option value="confirmado"> Confirmado</option>
+                    <option value="cancelado"> Cancelado</option>
+                  </select>
                 </td>
               </tr>
             ))}

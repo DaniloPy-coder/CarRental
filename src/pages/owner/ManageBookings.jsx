@@ -65,7 +65,7 @@ const ManageBookings = () => {
 
           <tbody>
             {bookings.map((booking) => (
-              <tr key={booking._id} className="border-t border-borderColor">
+              <tr key={booking.id} className="border-t border-borderColor">
                 <td className="flex items-center gap-3 p-3">
                   <img
                     src={booking.car.image}
@@ -97,13 +97,13 @@ const ManageBookings = () => {
                   <select
                     value={booking.status}
                     onChange={(e) =>
-                      changeBookingStatus(booking._id, e.target.value)
+                      changeBookingStatus(booking.id, e.target.value)
                     }
                     className={`mt-1 rounded-md border px-2 py-1.5 text-sm font-medium outline-none transition ${booking.status === 'pendente' && 'border-yellow-400 bg-yellow-50 text-yellow-700'} ${booking.status === 'confirmado' && 'border-green-400 bg-green-50 text-green-700'} ${booking.status === 'cancelado' && 'border-red-400 bg-red-50 text-red-700'} `}
                   >
-                    <option value="pendente">🟡 Pendente</option>
-                    <option value="confirmado">🟢 Confirmado</option>
-                    <option value="cancelado">🔴 Cancelado</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="confirmado">Confirmado</option>
+                    <option value="cancelado">Cancelado</option>
                   </select>
                 </td>
               </tr>

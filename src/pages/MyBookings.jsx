@@ -39,6 +39,22 @@ const MyBookings = () => {
       </p>
     )
 
+  const getStatusClasses = (status = '') => {
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+        return 'bg-green-400/15 text-green-600'
+
+      case 'pending':
+        return 'bg-yellow-400/20 text-yellow-700'
+
+      case 'cancelled':
+        return 'bg-red-400/15 text-red-600'
+
+      default:
+        return 'bg-gray-400/15 text-gray-600'
+    }
+  }
+
   return (
     <div className="mt-16 max-w-7xl px-6 text-sm md:px-16 lg:px-24 xl:px-32 2xl:px-48">
       <Title
@@ -77,13 +93,11 @@ const MyBookings = () => {
                     Reserva #{index + 1}
                   </p>
                   <p
-                    className={`rounded-full px-3 py-1 text-xs ${
-                      booking.status?.toLowerCase() === 'confirmado'
-                        ? 'bg-green-400/15 text-green-600'
-                        : 'bg-red-400/15 text-red-600'
-                    }`}
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusClasses(
+                      booking.status,
+                    )}`}
                   >
-                    {booking.status || 'Pendente'}
+                    {booking.status}
                   </p>
                 </div>
                 <div className="mt-3 flex items-start gap-2">

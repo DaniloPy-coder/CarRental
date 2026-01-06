@@ -28,7 +28,7 @@ const Hero = () => {
 
       <form
         onSubmit={handleSearch}
-        className="flex w-full max-w-[320px] flex-col items-start justify-between rounded-lg bg-white p-6 shadow-[0px_8px_20px_rgba(0,0,0,0.1)] md:max-w-[800px] md:flex-row md:items-center md:gap-8 md:rounded-full"
+        className="flex w-full max-w-[320px] flex-col items-start justify-between overflow-visible rounded-lg bg-white p-6 shadow-[0px_8px_20px_rgba(0,0,0,0.1)] md:max-w-[800px] md:flex-row md:items-center md:gap-8 md:rounded-full"
       >
         {/* Campos de seleção e datas */}
         <div className="flex flex-col items-start gap-8 md:ml-8 md:flex-row md:items-end md:gap-10">

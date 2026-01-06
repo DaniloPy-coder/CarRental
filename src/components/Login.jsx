@@ -69,7 +69,7 @@ const Login = () => {
   return (
     <section
       onClick={() => setShowLogin(false)}
-      className="fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center bg-black/50 text-sm text-gray-600"
+      className="fixed bottom-0 left-0 right-0 top-0 z-40 flex items-center justify-center bg-black/50 text-sm text-gray-600"
     >
       <form
         onSubmit={onSubmitHandler}

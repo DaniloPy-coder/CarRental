@@ -12,6 +12,7 @@ export const AppProvider = ({ children }) => {
   const [pickupDate, setPickupDate] = useState('')
   const [returnDate, setReturnDate] = useState('')
   const [cars, setCars] = useState([])
+  const [loadingDashboard, setLoadingDashboard] = useState(true)
 
   const navigate = useNavigate()
 
@@ -30,7 +31,6 @@ export const AppProvider = ({ children }) => {
       setUser(data)
       setIsOwner(data.role === 'owner')
     } catch (error) {
-      toast.error(error.message)
       setUser(null)
       setIsOwner(false)
     }
@@ -52,28 +52,40 @@ export const AppProvider = ({ children }) => {
   }
 
   const fetchDashboardData = async () => {
-    try {
-      const { data } = await api.get('/dashboard')
-      if (data.success) {
-        setDashboardData(data.dashboardData)
-      }
-    } catch (error) {
-      toast.error(
-        error?.response?.data?.message || 'Erro ao carregar dashboard',
-      )
+  try {
+    const { data } = await api.get('/dashboard')
+
+    if (data.success) {
+      setDashboardData(data.data)
     }
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message || 'Erro ao carregar dashboard',
+    )
+  } finally {
+    setLoadingDashboard(false)
   }
+}
 
   useEffect(() => {
+  const loadData = async () => {
     const savedToken = localStorage.getItem('token')
+
     if (savedToken) {
-      setToken(savedToken)
-      api.defaults.headers.common.Authorization = `Bearer ${savedToken}`
-      fetchUser()
-      fetchDashboardData()
-    }
+    setToken(savedToken)
+    api.defaults.headers.common.Authorization = `Bearer ${savedToken}`
+
+    await fetchUser()
+    await fetchDashboardData()
+  } else {
+    setLoadingDashboard(false) 
+  }
+
     fetchCars()
-  }, [])
+  }
+
+  loadData()
+}, [])
 
   const logout = () => {
     localStorage.removeItem('token')
@@ -104,6 +116,7 @@ export const AppProvider = ({ children }) => {
         fetchUser,
         dashboardData,
         fetchDashboardData,
+        loadingDashboard,
         logout,
         navigate,
       }}

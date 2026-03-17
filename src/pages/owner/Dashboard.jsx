@@ -5,7 +5,7 @@ import { AppContext } from '../../context/AppContext'
 
 const Dashboard = () => {
   const { dashboardData, loadingDashboard } = useContext(AppContext)
-  const data = dashboardData
+  const data = dashboardData || {}
 
   const dashboardCards = [
     {
@@ -77,7 +77,7 @@ const Dashboard = () => {
           <h1 className="text-lg font-medium">Reserva recente</h1>
           <p className="text-gray-500">Últimas reservas de clientes</p>
 
-          {(data.recentBookings ?? []).map((booking, index) => (
+          {(Array.isArray(data.recentBookings) ? data.recentBookings : []).map((booking, index) => (
             <div key={index} className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="hidden h-12 w-12 items-center justify-center rounded-full bg-primary/10 md:flex">
@@ -89,7 +89,7 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p>
-                    {booking.car.brand} {booking.car.model}
+                    
                   </p>
                   <p className="text-sm text-gray-500">
                     {booking.createdAt?.split('T')[0] ?? 'Sem data'}
@@ -98,7 +98,7 @@ const Dashboard = () => {
               </div>
 
               <div className="flex items-center gap-2 font-medium">
-                <p className="text-sm text-gray-500">{booking.price}</p>
+                <p className="text-sm text-gray-500">{booking.price ?? 0}</p>
                 <p className="rounded-full border border-borderColor px-3 py-0.5 text-sm">
                   {booking.status}
                 </p>

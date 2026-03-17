@@ -4,31 +4,49 @@ import Title from '../../components/owner/Title'
 import { AppContext } from '../../context/AppContext'
 
 const Dashboard = () => {
-  const { dashboardData } = useContext(AppContext)
+  const { dashboardData, loadingDashboard } = useContext(AppContext)
   const data = dashboardData
 
   const dashboardCards = [
     {
       title: 'Total de carros',
-      value: data.totalCars,
+      value: data?.totalCars ?? 0,
       icon: assets.carIconColored,
     },
     {
       title: 'Total de reservas',
-      value: data.totalBookings,
+      value: data.totalBookings ?? 0,
       icon: assets.listIconColored,
     },
     {
       title: 'Pendente',
-      value: data.pendingBookings,
+      value: data.pendingBookings ?? 0,
       icon: assets.cautionIconColored,
     },
     {
       title: 'Confirmado',
-      value: data.completedBookings,
+      value: data.completedBookings ?? 0,
       icon: assets.listIconColored,
     },
   ]
+
+  if (loadingDashboard) {
+  return (
+    <div className="flex h-[80vh] items-center justify-center">
+      <div className="flex flex-col items-center gap-4 rounded-lg border border-borderColor bg-white p-8 shadow-md">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+
+        <h2 className="text-lg font-semibold text-gray-700">
+          Carregando dashboard
+        </h2>
+
+        <p className="text-sm text-gray-500">
+          Buscando informações...
+        </p>
+      </div>
+    </div>
+  )
+}
 
   return (
     <div className="flex-1 px-4 pt-10 md:px-10">
@@ -93,7 +111,7 @@ const Dashboard = () => {
           <h1 className="text-lg font-medium">Receita mensal</h1>
           <p className="text-gray-500">Receita do mês atual</p>
           <p className="mt-6 text-3xl font-semibold text-primary">
-            {data.monthlyRevenue}
+            {data?.monthlyRevenue ?? 0}
           </p>
         </div>
       </div>

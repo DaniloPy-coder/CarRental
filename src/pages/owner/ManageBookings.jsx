@@ -4,6 +4,11 @@ import { AppContext } from '../../context/AppContext'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('pt-BR');
+}
+
 const ManageBookings = () => {
   const { currency } = useContext(AppContext)
 
@@ -78,8 +83,8 @@ const ManageBookings = () => {
                 </td>
 
                 <td className="p-3 max-md:hidden">
-                  {booking.pickupDate.split('T')[0]} até{' '}
-                  {booking.returnDate.split('T')[0]}
+                  {new Date(booking.pickupDate).toLocaleDateString('pt-BR')} até
+                  {new Date(booking.returnDate).toLocaleDateString('pt-BR')}
                 </td>
 
                 <td className="p-3">

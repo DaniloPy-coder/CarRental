@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { AppContext } from './AppContext'
 import toast from 'react-hot-toast'
 import { api } from '../services/api'
@@ -30,61 +30,44 @@ export const AppProvider = ({ children }) => {
       const { data } = await api.get('/me')
       setUser(data)
       setIsOwner(data.role === 'owner')
+      return data // Retorna para uso no useEffect
     } catch (error) {
       setUser(null)
       setIsOwner(false)
+      return null
     }
   }
 
   const fetchCars = async () => {
     try {
       const { data } = await api.get('/cars')
-
       if (data.success && Array.isArray(data.cars)) {
         setCars(data.cars)
-      } else {
-        console.error('Resposta inesperada da API:', data)
-        setCars([])
       }
     } catch (error) {
-      toast.error(error.message)
+      console.error('Erro ao buscar carros:', error.message)
     }
   }
 
   const fetchDashboardData = async () => {
-  try {
-    const { data } = await api.get('/dashboard');
-    
-    if (data.success) {
-      const { success, ...rest } = data; 
-      setDashboardData(rest); 
+    try {
+      setLoadingDashboard(true)
+      const { data } = await api.get('/dashboard')
+
+      if (data.success) {
+        const payload = data.dashboard || data.data || data;
+        
+        const { success, ...cleanData } = payload;
+        
+        setDashboardData(cleanData)
+      }
+    } catch (error) {
+      console.error("Erro na API Dashboard:", error.response?.data)
+      toast.error(error?.response?.data?.message || 'Erro ao carregar dashboard')
+    } finally {
+      setLoadingDashboard(false)
     }
-  } catch (error) {
-    console.error("Erro na API:", error.response?.data);
-  } finally {
-    setLoadingDashboard(false);
   }
-}
-
-  useEffect(() => {
-  const loadData = async () => {
-    const savedToken = localStorage.getItem('token')
-
-    if (savedToken) {
-    setToken(savedToken)
-    api.defaults.headers.common.Authorization = `Bearer ${savedToken}`
-
-    await fetchUser()
-    await fetchDashboardData()
-  } else {
-    setLoadingDashboard(false) 
-  }
-
-    fetchCars()
-  }
-
-  loadData()
-}, [])
 
   const logout = () => {
     localStorage.removeItem('token')
@@ -93,7 +76,33 @@ export const AppProvider = ({ children }) => {
     setIsOwner(false)
     api.defaults.headers.common.Authorization = ''
     toast.success('Logout realizado com sucesso')
+    navigate('/')
   }
+
+  useEffect(() => {
+    const loadData = async () => {
+      const savedToken = localStorage.getItem('token')
+
+      if (savedToken) {
+        setToken(savedToken)
+        api.defaults.headers.common.Authorization = `Bearer ${savedToken}`
+
+        const userData = await fetchUser()
+        
+        if (userData && userData.role === 'owner') {
+          await fetchDashboardData()
+        } else {
+          setLoadingDashboard(false)
+        }
+      } else {
+        setLoadingDashboard(false)
+      }
+
+      fetchCars()
+    }
+
+    loadData()
+  }, [])
 
   return (
     <AppContext.Provider

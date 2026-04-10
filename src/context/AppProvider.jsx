@@ -53,17 +53,16 @@ export const AppProvider = ({ children }) => {
 
   const fetchDashboardData = async () => {
   try {
-    const { data } = await api.get('/dashboard')
-
+    const { data } = await api.get('/dashboard');
+    
     if (data.success) {
-      setDashboardData(data.data)
+      const { success, ...rest } = data; 
+      setDashboardData(rest); 
     }
   } catch (error) {
-    toast.error(
-      error?.response?.data?.message || 'Erro ao carregar dashboard',
-    )
+    console.error("Erro na API:", error.response?.data);
   } finally {
-    setLoadingDashboard(false)
+    setLoadingDashboard(false);
   }
 }
 

@@ -4,10 +4,12 @@ import Title from '../../components/owner/Title'
 import { api } from '../../services/api'
 import toast from 'react-hot-toast'
 import { AppContext } from '../../context/AppContext'
+import { useNavigate } from 'react-router-dom'
 
 const ManageCars = () => {
   const { isOwner } = useContext(AppContext)
   const [cars, setCars] = useState([])
+  const navigate = useNavigate()
 
   const fetchOwnerCars = async () => {
     try {
@@ -74,7 +76,7 @@ const ManageCars = () => {
               <th className="p-3 font-medium max-md:hidden">Categoria</th>
               <th className="p-3 font-medium">Preço</th>
               <th className="p-3 font-medium max-md:hidden">Status</th>
-              <th className="p-3 font-medium">Ações</th>
+              <th className="p-3 font-medium text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -111,21 +113,27 @@ const ManageCars = () => {
                   </span>
                 </td>
 
-                <td className="flex items-center gap-2 p-3">
-                  <img
-                    src={
-                      car.isAvailable ? assets.eye_close_icon : assets.eye_icon
-                    }
-                    alt="toggle availability"
-                    className="cursor-pointer"
-                    onClick={() => toggleAvailability(car.id)}
-                  />
-                  <img
-                    src={assets.delete_icon}
-                    alt="delete icon"
-                    className="cursor-pointer"
-                    onClick={() => deleteCar(car.id)}
-                  />
+                <td className="p-3">
+                  <div className="flex items-center justify-center gap-3">
+                    <img
+                      src={assets.edit_icon || assets.eye_icon} 
+                      alt="edit icon"
+                      className="h-5 w-5 cursor-pointer opacity-70 hover:opacity-100"
+                      onClick={() => navigate(`/owner/edit-car/${car.id}`, { state: { car } })}
+                    />
+                    <img
+                      src={car.isAvailable ? assets.eye_close_icon : assets.eye_icon}
+                      alt="toggle availability"
+                      className="h-5 w-5 cursor-pointer opacity-70 hover:opacity-100"
+                      onClick={() => toggleAvailability(car.id)}
+                    />
+                    <img
+                      src={assets.delete_icon}
+                      alt="delete icon"
+                      className="h-5 w-5 cursor-pointer opacity-70 hover:opacity-100"
+                      onClick={() => deleteCar(car.id)}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}

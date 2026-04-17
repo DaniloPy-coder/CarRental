@@ -4,7 +4,7 @@ import Title from '../../components/owner/Title'
 import { AppContext } from '../../context/AppContext'
 
 const Dashboard = () => {
-  const { dashboardData, loadingDashboard } = useContext(AppContext)
+  const { dashboardData, loadingDashboard, currency } = useContext(AppContext)
   const data = dashboardData || {}
 
   const dashboardCards = [
@@ -31,22 +31,16 @@ const Dashboard = () => {
   ]
 
   if (loadingDashboard) {
-  return (
-    <div className="flex h-[80vh] items-center justify-center">
-      <div className="flex flex-col items-center gap-4 rounded-lg border border-borderColor bg-white p-8 shadow-md">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-
-        <h2 className="text-lg font-semibold text-gray-700">
-          Carregando dashboard
-        </h2>
-
-        <p className="text-sm text-gray-500">
-          Buscando informações...
-        </p>
+    return (
+      <div className="flex flex-1 h-[80vh] w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4 rounded-lg border border-borderColor bg-white p-8 shadow-md">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <h2 className="text-lg font-semibold text-gray-700">Carregando dashboard</h2>
+          <p className="text-sm text-gray-500">Buscando informações...</p>
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
   return (
     <div className="flex-1 px-4 pt-10 md:px-10">
@@ -55,12 +49,9 @@ const Dashboard = () => {
         subtitle="Monitore o desempenho geral da plataforma, incluindo total de carros, reservas, receita e atividades recentes"
       />
 
-      <div className="my-8 grid max-w-3xl gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="my-8 grid max-w-4xl gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {dashboardCards.map((card, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between gap-2 rounded-md border border-borderColor p-4"
-          >
+          <div key={index} className="flex items-center justify-between gap-2 rounded-md border border-borderColor p-4 bg-white">
             <div>
               <h1 className="text-xs text-gray-500">{card.title}</h1>
               <p className="text-lg font-semibold">{card.value}</p>
@@ -73,45 +64,42 @@ const Dashboard = () => {
       </div>
 
       <div className="mb-8 flex w-full flex-wrap items-start gap-6">
-        <div className="w-full max-w-lg rounded-md border border-borderColor p-4 md:p-6">
+        <div className="w-full max-w-lg rounded-md border border-borderColor p-4 md:p-6 bg-white">
           <h1 className="text-lg font-medium">Reserva recente</h1>
-          <p className="text-gray-500">Últimas reservas de clientes</p>
+          <p className="text-gray-500 mb-4">Últimas reservas de clientes</p>
 
           {(Array.isArray(data.recentBookings) ? data.recentBookings : []).map((booking, index) => (
-            <div key={index} className="mt-4 flex items-center justify-between">
+            <div key={index} className="mt-4 flex items-center justify-between border-b border-borderColor pb-3 last:border-0">
               <div className="flex items-center gap-2">
-                <div className="hidden h-12 w-12 items-center justify-center rounded-full bg-primary/10 md:flex">
-                  <img
-                    src={assets.listIconColored}
-                    alt="icon"
-                    className="h-5 w-5"
-                  />
+                <div className="hidden h-10 w-10 items-center justify-center rounded-full bg-primary/10 md:flex">
+                  <img src={assets.listIconColored} alt="icon" className="h-4 w-4" />
                 </div>
                 <div>
-                  <p>
-                    
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {booking.createdAt?.split('T')[0] ?? 'Sem data'}
+                  <p className="font-medium text-sm">{booking.car?.model || 'Carro'}</p>
+                  <p className="text-xs text-gray-500">
+                    {/* FORMATO BRASILEIRO AQUI */}
+                    {booking.createdAt ? new Date(booking.createdAt).toLocaleDateString('pt-BR') : 'Sem data'}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 font-medium">
-                <p className="text-sm text-gray-500">{booking.price ?? 0}</p>
-                <p className="rounded-full border border-borderColor px-3 py-0.5 text-sm">
-                  {booking.status}
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-semibold">{currency} {booking.price ?? 0}</p>
+                <p className={`rounded-full border px-3 py-0.5 text-xs capitalize ${
+                  booking.status === 'PENDING' ? 'border-yellow-400 text-yellow-600' : 'border-green-400 text-green-600'
+                }`}>
+                  {booking.status === 'PENDING' ? 'Pendente' : 'Confirmado'}
                 </p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mb-6 w-full rounded-md border border-borderColor p-4 md:max-w-xs md:p-6">
+        <div className="mb-6 w-full rounded-md border border-borderColor p-4 md:max-w-xs md:p-6 bg-white">
           <h1 className="text-lg font-medium">Receita mensal</h1>
           <p className="text-gray-500">Receita do mês atual</p>
           <p className="mt-6 text-3xl font-semibold text-primary">
-            {data?.monthlyRevenue ?? 0}
+            {currency} {data?.monthlyRevenue?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) ?? '0,00'}
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react'
 import Title from '../../components/owner/Title'
-import { assets } from '../../assets/assets'
+import { assets, cityList } from '../../assets/assets'
 import toast from 'react-hot-toast'
 import { api } from '../../services/api'
 import { AppContext } from '../../context/AppContext'
@@ -241,13 +241,14 @@ const AddCar = () => {
             required
             onChange={(e) => setCar({ ...car, location: e.target.value })}
             value={car.location}
-            className="mt-1 rounded-md border border-borderColor px-3 py-2 outline-none"
+            className="mt-1 rounded-md border border-borderColor px-3 py-2 outline-none" 
           >
             <option value="">Selecione o estado</option>
-            <option value="São Paulo">São Paulo</option>
-            <option value="Rio de Janeiro">Rio de Janeiro</option>
-            <option value="Minas Gerais">Minas Gerais</option>
-            {/* ... outras opções */}
+            {cityList.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
           </select>
         </div>
 

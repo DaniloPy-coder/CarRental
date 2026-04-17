@@ -38,6 +38,7 @@ const App = () => {
         <Route path="/owner" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="add-car" element={<AddCar />} />
+          <Route path="edit-car/:id" element={<AddCar />} />
           <Route path="manage-cars" element={<ManageCars />} />
           <Route path="manage-bookings" element={<ManageBookings />} />
         </Route>

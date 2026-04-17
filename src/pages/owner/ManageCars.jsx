@@ -118,7 +118,7 @@ const ManageCars = () => {
                     <img
                       src={assets.pen_icon} 
                       alt="Editar"
-                      className="h-5 w-5 cursor-pointer opacity-70 hover:opacity-100"
+                      className="h-3 w-3 cursor-pointer opacity-70 hover:opacity-100"
                       onClick={() => navigate(`/owner/edit-car/${car.id}`, { state: { car } })}
                     />
                     <img

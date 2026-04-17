@@ -116,9 +116,9 @@ const ManageCars = () => {
                 <td className="p-3">
                   <div className="flex items-center justify-center gap-3">
                     <img
-                      src={assets.edit_icon || assets.eye_icon} 
-                      alt="edit icon"
-                      className="h-5 w-5 cursor-pointer opacity-70 hover:opacity-100"
+                      src={assets.edit_icon} 
+                      alt="Editar"
+                      className="h-5 w-5 cursor-pointer opacity-70 hover:opacity-100 hover:scale-110 transition-all"
                       onClick={() => navigate(`/owner/edit-car/${car.id}`, { state: { car } })}
                     />
                     <img

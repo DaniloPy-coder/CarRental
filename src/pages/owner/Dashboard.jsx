@@ -30,6 +30,7 @@ const Dashboard = () => {
     },
   ]
 
+  // CORREÇÃO DA CENTRALIZAÇÃO
   if (loadingDashboard) {
     return (
       <div className="flex flex-1 h-[80vh] w-full items-center justify-center">
